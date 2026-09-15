@@ -13,7 +13,7 @@ langchain-community==0.3.27
 
 # ─── Vector store ─────────────────────────────────────────────
 # Capped <1.0 — ChromaDB 1.x has breaking API changes vs 0.4/0.5.
-chromadb>=0.4.22,<1.0.0
+chromadb>=1.0.0
 
 # ─── Document parsers ─────────────────────────────────────────
 PyPDF2>=3.0.0

@@ -13,3 +13,7 @@ db.helikonproject.com {
 list-me.net {
     reverse_proxy listme-frontend:80
 }
+
+localhost {
+    reverse_proxy frontend:80
+}
