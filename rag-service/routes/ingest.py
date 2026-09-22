@@ -8,7 +8,7 @@ from ingestion import ingest_document
 router = APIRouter()
 log = logging.getLogger(__name__)
 
-_ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt"}
+_ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt", ".png", ".jpg", ".jpeg"}
 _MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB
 
 # Magic bytes for file-type verification

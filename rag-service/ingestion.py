@@ -1,5 +1,6 @@
 import io
 import uuid
+from ocr import ocr_service, OCR
 from datetime import datetime, timezone
 
 from langchain_core.documents import Document
@@ -18,6 +19,12 @@ def extract_pages(file_bytes: bytes, filename: str) -> list[tuple[int | None, st
     PDFs get real 1-based page numbers; DOCX/TXT get page_number=None.
     """
     ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+
+
+    if ext == "png" or ext == "jpg" or ext == "jpeg":
+        ocr = ocr_service()
+        text = ocr.extract_text(file_bytes)
+        return [(None, text)] if text else [(None, "")]
 
     if ext == "pdf":
         import PyPDF2
