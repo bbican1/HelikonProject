@@ -9,6 +9,10 @@ Endpoints (all under /rag prefix):
     DELETE /rag/documents       remove documents + their chunks
     GET    /rag/models          available LLM models for the configured provider
 """
+import warnings
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from config import settings
 
 from contextlib import asynccontextmanager
 
@@ -68,3 +72,26 @@ app.include_router(ingest_router,     prefix="/rag")
 app.include_router(query_router,      prefix="/rag")
 app.include_router(documents_router,  prefix="/rag")
 app.include_router(models_router,     prefix="/rag")
+
+
+warnings.filterwarnings("ignore", category=ResourceWarning)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup Logik
+    if settings.llm_provider.lower() == "ollama":
+        print(f"🦙 Using Ollama provider - skipping API key validation")
+
+    from vector_store import _get_client, get_vectorstore
+    _get_client()
+    get_vectorstore()
+
+    yield
+
+
+    try:
+        from vector_store import _client
+        if _client is not None:
+            _client.close()
+    except Exception as e:
+        print(f"Cleanup error: {e}")

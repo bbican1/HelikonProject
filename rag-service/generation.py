@@ -1,4 +1,5 @@
 import pathlib
+from weaviate.classes.query import Filter
 
 from langchain_core.messages import SystemMessage, HumanMessage
 
@@ -20,11 +21,15 @@ def _load_system_prompt() -> str:
 # Exact HTML-formatting suffix
 
 
-def _build_filter(user_id: str, subject: str | None = None) -> dict:
-    """Build a ChromaDB where-filter, optionally scoped to a subject."""
+def _build_filter(user_id: str, subject: str | None = None):
+    """Build a native Weaviate Filter object."""
+    user_filter = Filter.by_property("user_id").equal(user_id)
+
     if subject:
-        return {"$and": [{"user_id": user_id}, {"subject": subject}]}
-    return {"user_id": user_id}
+        subject_filter = Filter.by_property("subject").equal(subject)
+        return user_filter & subject_filter  # Kombiniert Filter mit UND (&)
+
+    return user_filter
 
 
 def _truncate_snippet(text: str, max_len: int = 200) -> str:
@@ -132,7 +137,7 @@ def rag_parametric_generate(
     results_with_score = vs.similarity_search_with_score(
         user_prompt,
         k=top_k,
-        filter=_build_filter(user_id, subject),
+        filters=_build_filter(user_id, subject),
     )
 
     sources = []
@@ -184,7 +189,7 @@ def rag_generate(
     results_with_score = vs.similarity_search_with_score(
         query,
         k=top_k,
-        filter=_build_filter(user_id, subject),
+        filters=_build_filter(user_id, subject),
     )
 
     context = "\n\n".join(doc.page_content for doc, _ in results_with_score)
@@ -297,7 +302,7 @@ def rag_two_phase_generate(
     results_with_score = vs.similarity_search_with_score(
         user_prompt,
         k=top_k,
-        filter=_build_filter(user_id, subject),
+        filters=_build_filter(user_id, subject),
     )
     sources = []
     if results_with_score:
