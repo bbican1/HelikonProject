@@ -68,3 +68,21 @@ app.include_router(ingest_router,     prefix="/rag")
 app.include_router(query_router,      prefix="/rag")
 app.include_router(documents_router,  prefix="/rag")
 app.include_router(models_router,     prefix="/rag")
+
+from pipelines.gen_pipeline.pipeline import graph
+
+state = {
+    "model": "phi4-mini:3.8b",
+    "user_prompt": "Erkläre mir TCP und UDP",
+    "selected_agent": "",
+    "answer": "",
+    "validator_feedback": "",
+    "approved": False,
+    "retry_count": 0
+}
+
+
+result = graph.invoke(state)
+
+
+print(result["answer"])

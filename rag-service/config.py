@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     llm_api_key: str = ""
     llm_model: str = "llama3"
 
-    ollama_url: str = "http://host.docker.internal:11434"
+    ollama_url: str = "http://localhost:11434"
     ollama_embedding_model: str = "nomic-embed-text"
 
     embedding_api_key: str = ""
