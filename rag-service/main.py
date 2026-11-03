@@ -73,7 +73,7 @@ from pipelines.gen_pipeline.pipeline import graph
 
 state = {
     "model": "phi4-mini:3.8b",
-    "user_prompt": "Erkläre mir TCP und UDP",
+    "user_prompt": "Bewerte der folgenden Text: Der Himmel ist blau.",
     "selected_agent": "",
     "answer": "",
     "validator_feedback": "",

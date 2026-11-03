@@ -1,9 +1,9 @@
-from ..agents.base import BaseAgent
+from ..agents.base_agent import BaseAgent
 from llm import get_llm
 
 
-class ExplainerAgent(BaseAgent):
-    name = "explainer"
+class ErklaerAgent(BaseAgent):
+    name = "erklaer_agent"
     description = "Erklärt ein Thema"
 
     def invoke(self, state):

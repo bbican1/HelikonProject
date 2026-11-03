@@ -3,14 +3,16 @@ import json
 from pydantic import BaseModel
 
 from llm import get_llm
-from pipelines.gen_pipeline.agents.explainer import ExplainerAgent
+from pipelines.gen_pipeline.agents.erklaer_agent import ErklaerAgent
+from pipelines.gen_pipeline.agents.bewertungs_agent import BewertungsAgent
 
 
 class PlannerAgent:
 
     def invoke(self, state):
         agents = [
-            ExplainerAgent()
+            ErklaerAgent(),
+            BewertungsAgent()
         ]
         available_agents = "\n".join(
             [
