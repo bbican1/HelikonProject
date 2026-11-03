@@ -1,3 +1,4 @@
+from pipelines.gen_pipeline.agents.agent_registry import get_all_agents
 from pipelines.gen_pipeline.planner import PlannerAgent
 from pipelines.gen_pipeline.agents.erklaer_agent import ErklaerAgent
 from pipelines.gen_pipeline.agents.bewertungs_agent import BewertungsAgent
@@ -18,8 +19,9 @@ builder.add_node("planner", planner.invoke)
 
 builder.add_conditional_edges("planner", route_agent)
 
-builder.add_node("erklaer_agent", erklaer_agent.invoke)
-builder.add_node("bewertungs_agent", bewertungs_agent.invoke)
+for agent in get_all_agents():
+    builder.add_node(agent.name, agent.invoke)
+
 builder.add_edge(START, "planner")
 builder.add_edge("erklaer_agent", END)
 

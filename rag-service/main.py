@@ -15,6 +15,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from config import settings
+from pipelines.gen_pipeline.agents.agent_registry import list_agents
 
 
 @asynccontextmanager

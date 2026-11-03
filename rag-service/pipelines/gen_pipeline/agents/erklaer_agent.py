@@ -1,3 +1,5 @@
+import textwrap
+
 from ..agents.base_agent import BaseAgent
 from llm import get_llm
 
@@ -7,10 +9,10 @@ class ErklaerAgent(BaseAgent):
     description = "Erklärt ein Thema"
 
     def invoke(self, state):
-        prompt = f"""
+        prompt = textwrap.dedent(f"""
             Du bist ein Erkläragent. Erkläre dem User die folgende Frage verständlch:
             {state["user_prompt"]}
-        """
+        """)
 
         response = get_llm(state["model"]).invoke(prompt)
         state["answer"] = response.content
