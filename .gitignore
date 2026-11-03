@@ -44,3 +44,5 @@ nohup.out
 node_modules/
 __pycache__/
 *.pyc
+/rag-service/.venv/
+/rag-service/data/
