@@ -2,19 +2,19 @@ import textwrap
 
 from langchain_core.messages import SystemMessage, HumanMessage
 
-from ..agents.base_agent import BaseAgent
 from llm import get_llm
+from ..agents.base_agent import BaseAgent
 from ..tools.ragtool import RagTool
 
 
 class ErklaerAgent(BaseAgent):
     name = "erklaer_agent"
     description = "Erklärt ein Thema"
+    tool_names = ["rag_tool"]
 
 
     def invoke(self, state):
-        tools = [RagTool()]
-        llm = get_llm(state["model"]).bind_tools(tools)
+        llm = self.build_llm_with_tools(state["model"])
         prompt = SystemMessage(textwrap.dedent(f"""
             Du bist ein Erkläragent.
             WICHTIG:

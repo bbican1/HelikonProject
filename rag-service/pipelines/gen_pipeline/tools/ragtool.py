@@ -1,13 +1,14 @@
 import textwrap
 
-from langchain_core.tools import BaseTool
+
 from langgraph.prebuilt import ToolRuntime
 
 from generation import _build_filter, _source_label, _build_source
 from pipelines.gen_pipeline.state import PipelineState
+from pipelines.gen_pipeline.tools.base_tool import BaseHelikonTool
 from vector_store import get_vectorstore
 
-class RagTool(BaseTool):
+class RagTool(BaseHelikonTool):
 
     name:str = "rag_tool"
     description: str = textwrap.dedent("""

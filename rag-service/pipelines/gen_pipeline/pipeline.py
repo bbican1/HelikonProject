@@ -1,26 +1,27 @@
 from typing import Literal
 
 from langchain_core.messages import ToolMessage
-from langgraph.prebuilt import ToolNode, tools_condition
 
+from llm import get_llm
 from pipelines.gen_pipeline.agents.agent_registry import get_all_agents
 from pipelines.gen_pipeline.planner import PlannerAgent
 from pipelines.gen_pipeline.state import PipelineState
 
-from langgraph.graph import StateGraph, START, END, state
+from langgraph.graph import StateGraph, START, END
 
-from pipelines.gen_pipeline.tools.ragtool import RagTool
+from pipelines.gen_pipeline.tools.tool_registry import get_tool
 
 
 def route_agent(state):
     return state["selected_agent"]
+
 
 def tool_node(state: PipelineState):
     """Performs the tool call"""
 
     result = []
     for tool_call in state["messages"][-1].tool_calls:
-        tool = RagTool()    #TODO
+        tool = get_tool(tool_call["name"])
         observation = tool.invoke(tool_call["args"])
         result.append(ToolMessage(content=observation, tool_call_id=tool_call["id"]))
     return {"messages": result}
