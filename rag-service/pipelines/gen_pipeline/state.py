@@ -8,3 +8,5 @@ class PipelineState(TypedDict):
     validator_feedback: str
     approved: bool
     retry_count: int
+    user_id: str    # TODO check
+    subject: str

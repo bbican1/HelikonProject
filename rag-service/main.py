@@ -12,10 +12,13 @@ Endpoints (all under /rag prefix):
 
 from contextlib import asynccontextmanager
 
+import fastapi
 from fastapi import FastAPI
 
 from config import settings
 from pipelines.gen_pipeline.agents.agent_registry import list_agents
+from pipelines.gen_pipeline.state import PipelineState
+from pipelines.gen_pipeline.tools.ragtool import RagTool
 
 
 @asynccontextmanager
@@ -72,18 +75,28 @@ app.include_router(models_router,     prefix="/rag")
 
 from pipelines.gen_pipeline.pipeline import graph
 
-state = {
-    "model": "phi4-mini:3.8b",
-    "user_prompt": "Bewerte der folgenden Text: Der Himmel ist blau.",
-    "selected_agent": "",
-    "answer": "",
-    "validator_feedback": "",
-    "approved": False,
-    "retry_count": 0
-}
+router = fastapi.APIRouter()
+
+@router.post("/test")
+def test():
+    state: PipelineState = {
+        "model": "llama3.2:latest",
+        "user_prompt": "Erkläre Multithreading",
+        "selected_agent": "",
+        "answer": "",
+        "validator_feedback": "",
+        "approved": False,
+        "retry_count": 0,
+        "user_id": 2,
+        "subject": "SEW"
+    }
 
 
-result = graph.invoke(state)
+    result = graph.invoke(state)
 
 
-print(result["answer"])
+    print(result["answer"])
+
+    #RagTool(state).invoke("Software")
+
+app.include_router(router)
