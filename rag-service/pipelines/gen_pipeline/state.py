@@ -1,6 +1,7 @@
-from typing import TypedDict
+from langgraph.graph import MessagesState
 
-class PipelineState(TypedDict):
+
+class PipelineState(MessagesState):
     model: str
     user_prompt: str
     selected_agent: str

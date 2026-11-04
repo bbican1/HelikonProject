@@ -80,6 +80,7 @@ router = fastapi.APIRouter()
 @router.post("/test")
 def test():
     state: PipelineState = {
+        "messages": [],
         "model": "llama3.2:latest",
         "user_prompt": "Erkläre Multithreading",
         "selected_agent": "",

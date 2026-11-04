@@ -1,6 +1,7 @@
 import textwrap
 
 from langchain_core.tools import BaseTool
+from langgraph.prebuilt import ToolRuntime
 
 from generation import _build_filter, _source_label, _build_source
 from pipelines.gen_pipeline.state import PipelineState
@@ -27,17 +28,17 @@ class RagTool(BaseTool):
     
     """)
 
-    def __init__(self, state: PipelineState):
+    """def __init__(self, user_id: str, subject: str):
         super().__init__()
-        self._state = state
+        self._user_id = user_id
+        self._subject = subject"""
 
     def _run(self, search_term):
         vs = get_vectorstore()
-        print(self._state)
         results_with_score = vs.similarity_search_with_score(
             search_term,
             k=5,    # TODO
-            #filter=_build_filter(self._state["user_id"], self._state["subject"]), TODO fix filter or wait for weaviate
+            # filter=_build_filter(self._user_id, self._subject), # TODO fix filter or wait for weaviate
         )
 
         context_parts = []
