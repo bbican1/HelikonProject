@@ -11,11 +11,7 @@ class ErklaerAgent(BaseAgent):
     name = "erklaer_agent"
     description = "Erklärt ein Thema"
     tool_names = ["rag_tool"]
-
-
-    def invoke(self, state):
-        llm = self.build_llm_with_tools(state["model"])
-        prompt = SystemMessage(textwrap.dedent(f"""
+    prompt = """
             Du bist ein Erkläragent.
             WICHTIG:
             Bevor du antwortest, prüfe ob du Informationen aus
@@ -24,11 +20,8 @@ class ErklaerAgent(BaseAgent):
             Wenn die Frage Bezug auf ein PDF, Skript oder Lernmaterial nimmt,
             musst du zuerst das Tool rag_tool verwenden.
             Erkläre dem User die folgende Frage verständlch:
-        """))
+        """
 
-        response = llm.invoke([prompt] + [HumanMessage(state["user_prompt"])] + state["messages"])
-        print(response.tool_calls)
 
-        return {
-            "messages": [response]
-        }
+    def invoke(self, state):
+        return self.basic_response(state, self.prompt)

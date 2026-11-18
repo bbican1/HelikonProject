@@ -7,14 +7,17 @@ from llm import get_llm
 class BewertungsAgent(BaseAgent):
     name = "bewertungs_agent"
     description = "Bewertet eine Aufgabe"
+    tool_names = ["rag_tool"]
+    prompt = """
+                Du bist ein Bewertungsagent.
+                WICHTIG:
+                Bevor du antwortest, prüfe ob du Informationen aus
+                den hochgeladenen Dokumenten benötigst.
+
+                Wenn die Frage Bezug auf ein PDF, Skript oder Lernmaterial nimmt,
+                musst du zuerst das Tool rag_tool verwenden.
+                Bewerte folgenden User-Input nachvollziehbar:
+            """
 
     def invoke(self, state):
-        prompt = textwrap.dedent(f"""
-            Du bist ein Bewertungsagent. Bewerte folgende Aufgabe eines Users:
-            {state["user_prompt"]}
-        """)
-
-        response = get_llm(state["model"]).invoke(prompt)
-        state["answer"] = response.content
-
-        return state
+        return self.basic_response(state, self.prompt)
