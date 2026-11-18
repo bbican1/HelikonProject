@@ -81,7 +81,7 @@ router = fastapi.APIRouter()
 def test():
     state: GenPipelineState = {
         "messages": [],
-        "model": "llama3.2:latest",
+        "model": "",
         "user_prompt": "Erkläre Multithreading",
         "selected_agent": "",
         "answer": "",

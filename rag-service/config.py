@@ -17,4 +17,7 @@ class Settings(BaseSettings):
         env_file = ".env"
         case_sensitive = False
 
+    gen_pipeline_planner_model:str = "llama3.2:latest"
+    gen_pipeline_validator_model:str = "llama3.2:latest"
+
 settings = Settings()

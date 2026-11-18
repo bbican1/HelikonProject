@@ -3,6 +3,7 @@ import textwrap
 from langchain_core.messages import SystemMessage
 from pydantic import BaseModel
 
+from config import settings
 from llm import get_llm
 from pipelines.gen_pipeline.agents.base_agent import BaseAgent
 
@@ -32,11 +33,12 @@ class ValidatorAgent(BaseAgent):
     """
 
     def invoke(self, state):
-        llm = get_llm(state["model"])
+        llm = get_llm(settings.gen_pipeline_validator_model)
         structured_llm = llm.with_structured_output(
             ValidatorResult
         )
         response = structured_llm.invoke(
+            # TODO ganze history
             [SystemMessage(textwrap.dedent(self.prompt))] +
             state["messages"]
         )

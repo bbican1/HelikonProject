@@ -23,7 +23,7 @@ class BaseAgent(ABC):
         return get_llm(model).bind_tools(get_tools(self.tool_names))
 
     def basic_response(self, state: GenPipelineState):
-        if not state["retry_count"] == 0 and not state["approved"]:
+        if state["retry_count"] > 0:
             return self.basic_regenerate(state)
         llm = self.build_llm_with_tools(state["model"])
         response = llm.invoke(self.build_message_history(state))
