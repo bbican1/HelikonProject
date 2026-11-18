@@ -1,9 +1,7 @@
 from typing import Literal
-from weakref import finalize
 
 from langchain_core.messages import ToolMessage
 
-from llm import get_llm
 from pipelines.gen_pipeline.agents.agent_registry import get_all_agents
 from pipelines.gen_pipeline.planner import PlannerAgent
 from pipelines.gen_pipeline.state import PipelineState
@@ -40,6 +38,9 @@ def should_continue(state: PipelineState) -> Literal["tool_node", "finalize"]:
     # Otherwise, we stop (reply to the user)#
     return "finalize"
 
+def tool_to_agent(state: PipelineState):
+    return state["selected_agent"]
+
 def finalize_answer(state: PipelineState):
     last_message = state["messages"][-1]
 
@@ -51,20 +52,22 @@ planner = PlannerAgent()
 
 builder = StateGraph(PipelineState)
 
+builder.add_edge(START, "planner")
 builder.add_node("planner", planner.invoke)
 
 builder.add_conditional_edges("planner", route_agent)
 builder.add_node("tool_node", tool_node)
+builder.add_conditional_edges("tool_node", tool_to_agent)
 builder.add_node("finalize", finalize_answer)
 
 for agent in get_all_agents():
     builder.add_node(agent.name, agent.invoke)
     #builder.add_conditional_edges(agent.name, tools_condition)
     builder.add_conditional_edges(agent.name, should_continue,["tool_node", "finalize"])
-builder.add_edge("tool_node", "erklaer_agent")
+#builder.add_edge("tool_node", "erklaer_agent")
 
 
-builder.add_edge(START, "planner")
+
 builder.add_edge("finalize", END)
 
 graph = builder.compile()
