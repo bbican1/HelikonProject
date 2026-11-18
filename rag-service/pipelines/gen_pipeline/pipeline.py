@@ -1,4 +1,5 @@
 from typing import Literal
+from weakref import finalize
 
 from langchain_core.messages import ToolMessage
 
@@ -26,7 +27,7 @@ def tool_node(state: PipelineState):
         result.append(ToolMessage(content=observation, tool_call_id=tool_call["id"]))
     return {"messages": result}
 
-def should_continue(state: PipelineState) -> Literal["tool_node", END]:
+def should_continue(state: PipelineState) -> Literal["tool_node", "finalize"]:
     """Decide if we should continue the loop or stop based upon whether the LLM made a tool call"""
 
     messages = state["messages"]
@@ -36,8 +37,15 @@ def should_continue(state: PipelineState) -> Literal["tool_node", END]:
     if last_message.tool_calls:
         return "tool_node"
 
-    # Otherwise, we stop (reply to the user)
-    return END
+    # Otherwise, we stop (reply to the user)#
+    return "finalize"
+
+def finalize_answer(state: PipelineState):
+    last_message = state["messages"][-1]
+
+    return {
+        "answer": last_message.content
+    }
 
 planner = PlannerAgent()
 
@@ -47,16 +55,17 @@ builder.add_node("planner", planner.invoke)
 
 builder.add_conditional_edges("planner", route_agent)
 builder.add_node("tool_node", tool_node)
+builder.add_node("finalize", finalize_answer)
 
 for agent in get_all_agents():
     builder.add_node(agent.name, agent.invoke)
     #builder.add_conditional_edges(agent.name, tools_condition)
-    builder.add_conditional_edges(agent.name, should_continue,["tool_node", END])
+    builder.add_conditional_edges(agent.name, should_continue,["tool_node", "finalize"])
 builder.add_edge("tool_node", "erklaer_agent")
 
 
 builder.add_edge(START, "planner")
-builder.add_edge("erklaer_agent", END)
+builder.add_edge("finalize", END)
 
 graph = builder.compile()
 

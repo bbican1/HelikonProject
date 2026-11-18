@@ -96,7 +96,7 @@ def test():
     result = graph.invoke(state)
 
 
-    print(result["answer"])
+    return result["answer"]
 
     #RagTool(state).invoke("Software")
 
