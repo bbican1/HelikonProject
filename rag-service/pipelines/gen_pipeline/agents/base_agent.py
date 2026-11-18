@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from llm import get_llm
-from pipelines.gen_pipeline.state import PipelineState
+from pipelines.gen_pipeline.pipeline_state import PipelineState
 from pipelines.gen_pipeline.tools.tool_registry import get_tools
 
 

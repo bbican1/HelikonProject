@@ -3,8 +3,9 @@ from typing import Literal
 from langchain_core.messages import ToolMessage
 
 from pipelines.gen_pipeline.agents.agent_registry import get_all_agents
-from pipelines.gen_pipeline.planner import PlannerAgent
-from pipelines.gen_pipeline.state import PipelineState
+from pipelines.gen_pipeline.agents.planner import PlannerAgent
+from pipelines.gen_pipeline.agents.validator import ValidatorAgent
+from pipelines.gen_pipeline.pipeline_state import PipelineState
 
 from langgraph.graph import StateGraph, START, END
 
@@ -21,7 +22,7 @@ def tool_node(state: PipelineState):
         result.append(ToolMessage(content=observation, tool_call_id=tool_call["id"]))
     return {"messages": result}
 
-def should_continue(state: PipelineState) -> Literal["tool_node", "finalize"]:
+def should_continue(state: PipelineState) -> Literal["tool_node", "validate"]:
     """Decide if we should continue the loop or stop based upon whether the LLM made a tool call"""
 
     messages = state["messages"]
@@ -32,7 +33,7 @@ def should_continue(state: PipelineState) -> Literal["tool_node", "finalize"]:
         return "tool_node"
 
     # Otherwise, we stop (reply to the user)#
-    return "finalize"
+    return "validate"
 
 def finalize_answer(state: PipelineState):
     """Sets the last message as Answer"""
@@ -42,7 +43,14 @@ def finalize_answer(state: PipelineState):
         "answer": last_message.content
     }
 
+def answer_validated(state: PipelineState):
+    if state["approved"]:
+        return "finalize"
+
+    return "regenerate"
+
 planner = PlannerAgent()
+validator = ValidatorAgent()
 
 builder = StateGraph(PipelineState)
 
@@ -55,9 +63,12 @@ builder.add_conditional_edges("tool_node", lambda state: state["selected_agent"]
 
 for agent in get_all_agents():
     builder.add_node(agent.name, agent.invoke)
-    builder.add_conditional_edges(agent.name, should_continue,["tool_node", "finalize"])
+    builder.add_conditional_edges(agent.name, should_continue,["tool_node", "validate"])
 
+builder.add_node("validate", validator.invoke)
+builder.add_conditional_edges("validate", answer_validated)
 builder.add_node("finalize", finalize_answer)
+
 builder.add_edge("finalize", END)
 
 graph = builder.compile()
