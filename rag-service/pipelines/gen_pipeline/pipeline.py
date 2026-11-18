@@ -11,10 +11,6 @@ from langgraph.graph import StateGraph, START, END
 from pipelines.gen_pipeline.tools.tool_registry import get_tool
 
 
-def route_agent(state):
-    return state["selected_agent"]
-
-
 def tool_node(state: PipelineState):
     """Performs the tool call"""
 
@@ -38,10 +34,8 @@ def should_continue(state: PipelineState) -> Literal["tool_node", "finalize"]:
     # Otherwise, we stop (reply to the user)#
     return "finalize"
 
-def tool_to_agent(state: PipelineState):
-    return state["selected_agent"]
-
 def finalize_answer(state: PipelineState):
+    """Sets the last message as Answer"""
     last_message = state["messages"][-1]
 
     return {
@@ -55,19 +49,15 @@ builder = StateGraph(PipelineState)
 builder.add_edge(START, "planner")
 builder.add_node("planner", planner.invoke)
 
-builder.add_conditional_edges("planner", route_agent)
+builder.add_conditional_edges("planner", lambda state: state["selected_agent"])
 builder.add_node("tool_node", tool_node)
-builder.add_conditional_edges("tool_node", tool_to_agent)
-builder.add_node("finalize", finalize_answer)
+builder.add_conditional_edges("tool_node", lambda state: state["selected_agent"])
 
 for agent in get_all_agents():
     builder.add_node(agent.name, agent.invoke)
-    #builder.add_conditional_edges(agent.name, tools_condition)
     builder.add_conditional_edges(agent.name, should_continue,["tool_node", "finalize"])
-#builder.add_edge("tool_node", "erklaer_agent")
 
-
-
+builder.add_node("finalize", finalize_answer)
 builder.add_edge("finalize", END)
 
 graph = builder.compile()
