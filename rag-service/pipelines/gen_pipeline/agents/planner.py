@@ -5,9 +5,12 @@ from pydantic import BaseModel
 
 from llm import get_llm
 from pipelines.gen_pipeline.agents.agent_registry import list_agents
+from pipelines.gen_pipeline.agents.base_agent import BaseAgent
 
 
-class PlannerAgent:
+class PlannerAgent(BaseAgent):
+    name = "planner_agent"
+    description = "Plant den zu nutzenden Agenten"
 
     def invoke(self, state):
 
