@@ -17,7 +17,7 @@ from fastapi import FastAPI
 
 from config import settings
 from pipelines.gen_pipeline.agents.agent_registry import list_agents
-from pipelines.gen_pipeline.pipeline_state import PipelineState
+from pipelines.gen_pipeline.gen_pipeline_state import GenPipelineState
 from pipelines.gen_pipeline.tools.ragtool import RagTool
 
 
@@ -73,13 +73,13 @@ app.include_router(query_router,      prefix="/rag")
 app.include_router(documents_router,  prefix="/rag")
 app.include_router(models_router,     prefix="/rag")
 
-from pipelines.gen_pipeline.pipeline import graph
+from pipelines.gen_pipeline.gen_pipeline import graph
 
 router = fastapi.APIRouter()
 
 @router.post("/test")
 def test():
-    state: PipelineState = {
+    state: GenPipelineState = {
         "messages": [],
         "model": "llama3.2:latest",
         "user_prompt": "Erkläre Multithreading",

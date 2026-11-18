@@ -4,7 +4,7 @@ import textwrap
 from langgraph.prebuilt import ToolRuntime
 
 from generation import _build_filter, _source_label, _build_source
-from pipelines.gen_pipeline.pipeline_state import PipelineState
+from pipelines.gen_pipeline.gen_pipeline_state import GenPipelineState
 from pipelines.gen_pipeline.tools.base_tool import BaseHelikonTool
 from vector_store import get_vectorstore
 

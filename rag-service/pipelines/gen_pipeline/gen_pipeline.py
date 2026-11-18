@@ -5,14 +5,14 @@ from langchain_core.messages import ToolMessage
 from pipelines.gen_pipeline.agents.agent_registry import get_all_agents
 from pipelines.gen_pipeline.agents.planner import PlannerAgent
 from pipelines.gen_pipeline.agents.validator import ValidatorAgent
-from pipelines.gen_pipeline.pipeline_state import PipelineState
+from pipelines.gen_pipeline.gen_pipeline_state import GenPipelineState
 
 from langgraph.graph import StateGraph, START, END
 
 from pipelines.gen_pipeline.tools.tool_registry import get_tool
 
 
-def tool_node(state: PipelineState):
+def tool_node(state: GenPipelineState):
     """Performs the tool call"""
 
     result = []
@@ -22,7 +22,7 @@ def tool_node(state: PipelineState):
         result.append(ToolMessage(content=observation, tool_call_id=tool_call["id"]))
     return {"messages": result}
 
-def should_continue(state: PipelineState) -> Literal["tool_node", "validate"]:
+def should_continue(state: GenPipelineState) -> Literal["tool_node", "validate"]:
     """Decide if we should continue the loop or stop based upon whether the LLM made a tool call"""
 
     messages = state["messages"]
@@ -35,7 +35,7 @@ def should_continue(state: PipelineState) -> Literal["tool_node", "validate"]:
     # Otherwise, we stop (reply to the user)#
     return "validate"
 
-def finalize_answer(state: PipelineState):
+def finalize_answer(state: GenPipelineState):
     """Sets the last message as Answer"""
     last_message = state["messages"][-1]
 
@@ -43,19 +43,19 @@ def finalize_answer(state: PipelineState):
         "answer": last_message.content
     }
 
-def answer_validated(state: PipelineState):
+def answer_validated(state: GenPipelineState):
     if state["approved"]:
         return "finalize"
 
     return "regenerate"
 
-def regenerate(state: PipelineState):
+def regenerate(state: GenPipelineState):
     return {"retry_count":state["retry_count"]+1}
 
 planner = PlannerAgent()
 validator = ValidatorAgent()
 
-builder = StateGraph(PipelineState)
+builder = StateGraph(GenPipelineState)
 
 builder.add_edge(START, "planner")
 builder.add_node("planner", planner.invoke)

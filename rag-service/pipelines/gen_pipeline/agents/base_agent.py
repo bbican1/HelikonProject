@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from llm import get_llm
-from pipelines.gen_pipeline.pipeline_state import PipelineState
+from pipelines.gen_pipeline.gen_pipeline_state import GenPipelineState
 from pipelines.gen_pipeline.tools.tool_registry import get_tools
 
 
@@ -22,14 +22,14 @@ class BaseAgent(ABC):
     def build_llm_with_tools(self, model):
         return get_llm(model).bind_tools(get_tools(self.tool_names))
 
-    def basic_response(self, state: PipelineState):
+    def basic_response(self, state: GenPipelineState):
         if not state["retry_count"] == 0 and not state["approved"]:
             return self.basic_regenerate(state)
         llm = self.build_llm_with_tools(state["model"])
         response = llm.invoke(self.build_message_history(state))
         return {"messages": [response]}
 
-    def basic_regenerate(self, state: PipelineState):
+    def basic_regenerate(self, state: GenPipelineState):
         regen_prompt = f"""
             Der Validator hat deine Antwort abgelehnt.
             
@@ -50,5 +50,5 @@ class BaseAgent(ABC):
         response = llm.invoke(self.build_message_history(state) + [HumanMessage(textwrap.dedent(regen_prompt))])
         return {"messages":[response]}
 
-    def build_message_history(self, state: PipelineState):
+    def build_message_history(self, state: GenPipelineState):
         return [SystemMessage(textwrap.dedent(self.sys_prompt))] + [HumanMessage(state["user_prompt"])] + state["messages"]

@@ -1,7 +1,7 @@
 from langgraph.graph import MessagesState
 
 
-class PipelineState(MessagesState):
+class GenPipelineState(MessagesState):
     model: str
     user_prompt: str
     selected_agent: str
