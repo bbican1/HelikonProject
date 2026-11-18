@@ -8,7 +8,7 @@ class BewertungsAgent(BaseAgent):
     name = "bewertungs_agent"
     description = "Bewertet eine Aufgabe"
     tool_names = ["rag_tool"]
-    prompt = """
+    sys_prompt = """
                 Du bist ein Bewertungsagent.
                 WICHTIG:
                 Bevor du antwortest, prüfe ob du Informationen aus
@@ -20,4 +20,4 @@ class BewertungsAgent(BaseAgent):
             """
 
     def invoke(self, state):
-        return self.basic_response(state, self.prompt)
+        return self.basic_response(state)

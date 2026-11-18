@@ -49,6 +49,9 @@ def answer_validated(state: PipelineState):
 
     return "regenerate"
 
+def regenerate(state: PipelineState):
+    return {"retry_count":state["retry_count"]+1}
+
 planner = PlannerAgent()
 validator = ValidatorAgent()
 
@@ -67,6 +70,8 @@ for agent in get_all_agents():
 
 builder.add_node("validate", validator.invoke)
 builder.add_conditional_edges("validate", answer_validated)
+builder.add_node("regenerate", regenerate)
+builder.add_conditional_edges("regenerate", lambda state: state["selected_agent"])
 builder.add_node("finalize", finalize_answer)
 
 builder.add_edge("finalize", END)

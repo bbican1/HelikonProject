@@ -11,7 +11,7 @@ class ErklaerAgent(BaseAgent):
     name = "erklaer_agent"
     description = "Erklärt ein Thema"
     tool_names = ["rag_tool"]
-    prompt = """
+    sys_prompt = """
             Du bist ein Erkläragent.
             WICHTIG:
             Bevor du antwortest, prüfe ob du Informationen aus
@@ -24,4 +24,4 @@ class ErklaerAgent(BaseAgent):
 
 
     def invoke(self, state):
-        return self.basic_response(state, self.prompt)
+        return self.basic_response(state)
