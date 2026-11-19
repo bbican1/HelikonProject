@@ -51,4 +51,4 @@ class BaseAgent(ABC):
         return {"messages":[response]}
 
     def build_message_history(self, state: GenPipelineState):
-        return [SystemMessage(textwrap.dedent(self.sys_prompt))] + [HumanMessage(state["user_prompt"])] + state["messages"]
+        return [SystemMessage(textwrap.dedent(self.sys_prompt))] + state["messages"]

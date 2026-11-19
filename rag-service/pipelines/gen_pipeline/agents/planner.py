@@ -27,7 +27,7 @@ class PlannerAgent(BaseAgent):
             {list_agents()}
             
             Benutzeranfrage:
-            {state["user_prompt"]}#
+            {state["messages"][0].content}
             
             {list_models()}
             

@@ -3,7 +3,6 @@ from langgraph.graph import MessagesState
 
 class GenPipelineState(MessagesState):
     model: str
-    user_prompt: str
     selected_agent: str
     answer: str
     validator_feedback: str

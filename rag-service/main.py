@@ -14,6 +14,7 @@ from contextlib import asynccontextmanager
 
 import fastapi
 from fastapi import FastAPI
+from langchain_core.messages import HumanMessage
 
 from config import settings
 from pipelines.gen_pipeline.agents.agent_registry import list_agents
@@ -80,9 +81,8 @@ router = fastapi.APIRouter()
 @router.post("/test")
 def test():
     state: GenPipelineState = {
-        "messages": [],
+        "messages": [HumanMessage("Erkläre Multithreading")],
         "model": "",
-        "user_prompt": "Erkläre Multithreading",
         "selected_agent": "",
         "answer": "",
         "validator_feedback": "",
