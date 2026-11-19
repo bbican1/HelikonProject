@@ -29,7 +29,8 @@ class PlannerAgent(BaseAgent):
             Benutzeranfrage:
             {state["messages"][0].content}
             
-            {list_models()}
+            Verfügbare Modelle:
+            {settings.gen_pipeline_models}
             
             Antworte ausschließlich als JSON:
             {{
