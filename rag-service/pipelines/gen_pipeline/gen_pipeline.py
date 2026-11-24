@@ -1,9 +1,11 @@
 from typing import Literal
 
-from langchain_core.messages import ToolMessage
+from langchain_classic.chains.question_answering.map_reduce_prompt import messages
+from langchain_core.messages import ToolMessage, AIMessage
 
 from pipelines.gen_pipeline.agents.agent_registry import get_all_agents
 from pipelines.gen_pipeline.agents.planner import PlannerAgent
+from pipelines.gen_pipeline.agents.promptcheck_agent import PromptcheckAgent
 from pipelines.gen_pipeline.agents.validator import ValidatorAgent
 from pipelines.gen_pipeline.gen_pipeline_state import GenPipelineState
 
@@ -52,12 +54,22 @@ def answer_validated(state: GenPipelineState):
 def regenerate(state: GenPipelineState):
     return {"retry_count":state["retry_count"]+1}
 
+def prompt_ok(state: GenPipelineState):
+    if state["prompt_ok"]:
+        return "planner"
+    return "finalize"
+
 planner = PlannerAgent()
 validator = ValidatorAgent()
+promptchecker = PromptcheckAgent()
 
 builder = StateGraph(GenPipelineState)
 
-builder.add_edge(START, "planner")
+builder.add_edge(START, "prompt_check")
+
+builder.add_node("prompt_check", promptchecker.invoke)
+builder.add_conditional_edges("prompt_check", prompt_ok, ["planner", "finalize"])
+
 builder.add_node("planner", planner.invoke)
 
 builder.add_conditional_edges("planner", lambda state: state["selected_agent"])

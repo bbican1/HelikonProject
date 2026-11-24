@@ -19,6 +19,7 @@ class Settings(BaseSettings):
 
     gen_pipeline_planner_model:str = "llama3.2:latest"
     gen_pipeline_validator_model:str = "llama3.2:latest"
+    gen_pipeline_promptcheck_model:str = "llama3.2:latest"
     gen_pipeline_models: dict[str, str] = {
         "mistral-nemo:latest":
             "Leistungsfähiges Allround-Modell mit Unterstützung für Tool-Calling. Geeignet für komplexe Fragen, Agentensteuerung und strukturierte Aufgaben.",

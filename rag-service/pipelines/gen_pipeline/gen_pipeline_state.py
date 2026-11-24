@@ -10,3 +10,5 @@ class GenPipelineState(MessagesState):
     retry_count: int
     user_id: str    # TODO check
     subject: str
+    prompt_ok: bool
+    prompt_reason: str
