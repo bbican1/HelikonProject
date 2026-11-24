@@ -44,7 +44,7 @@ def finalize_answer(state: GenPipelineState):
     }
 
 def answer_validated(state: GenPipelineState):
-    if state["approved"]:
+    if state["approved"] or state["retry_count"] >= 3:
         return "finalize"
 
     return "regenerate"
